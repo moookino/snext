@@ -1,0 +1,26 @@
+version: "3.6"
+services:
+  snext:
+    image: moookino/snext:latest
+    container_name: snext
+    restart: always
+    networks:
+      - proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.snext.entrypoints=http"
+      - "traefik.http.routers.snext.rule=Host(`example.domain.ltd`)"
+      - "traefik.http.middlewares.snext-https-redirect.redirectscheme.scheme=https"
+      - "traefik.http.routers.snext.middlewares=snext-https-redirect"
+      - "traefik.http.routers.snext-secure.entrypoints=https"
+      - "traefik.http.routers.snext-secure.rule=Host(`example.domain.ltd`)"
+      - "traefik.http.routers.snext-secure.tls=true"
+      - "traefik.http.routers.snext-secure.tls.certresolver=http"
+      - "traefik.http.routers.snext-secure.service=snext"
+      - "traefik.http.services.snext.loadbalancer.server.port=8043"
+      - "traefik.docker.network=proxy"
+
+networks:
+  proxy:
+    external: true
+
